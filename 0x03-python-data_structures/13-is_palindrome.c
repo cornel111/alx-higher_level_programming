@@ -1,72 +1,69 @@
+#include <stdlib.h>
 #include "lists.h"
 
 /**
- * reverse_listint - reverses a linked list
- * @head: pointer to the first node in the list
- *
- * Return: pointer to the first node in the new list
+ * list_len - computes the length of the liked list..
+ * @h: a pointer to the list to iterato to.
+ * Return: the number of nodes
  */
-void reverse_listint(listint_t **head)
+size_t list_len(const listint_t *h)
 {
-	listint_t *prev = NULL;
-	listint_t *current = *head;
-	listint_t *next = NULL;
+	const listint_t *tmp;
+	size_t i = 0;
 
-	while (current)
+	tmp = h;
+	if (tmp)
+		tmp = h;
+	while (tmp)
 	{
-		next = current->next;
-		current->next = prev;
-		prev = current;
-		current = next;
+		i++;
+		tmp = tmp->next;
 	}
-
-	*head = prev;
+	return (i);
 }
 
 /**
- * is_palindrome - checks if a linked list is a palindrome
- * @head: double pointer to the linked list
- *
- * Return: 1 if it is, 0 if not
+ * _chunk_ispal - Tests if a part of a list is palindrome.
+ * @l: The list
+ * @start: The start
+ * @end: The end
+ * Return: 1 if the substring s[start..end] is palindrome.
+ *	   0 otherwise.
+ */
+int _chunk_ispal(listint_t **l, int start, int end)
+{
+	if (start == end)
+		return (1);
+	if (l[start]->n != l[end]->n)
+		return (0);
+	if (start < end + 1)
+		return (_chunk_ispal(l, start + 1, end - 1));
+	return (1);
+}
+
+/**
+ * is_palindrome - checks if a singly linked list is a palindrome
+ * @head: The head of the list
+ * Return: 1 if the list is a palindrome. 0 otherwise.
  */
 int is_palindrome(listint_t **head)
 {
-	listint_t *slow = *head, *fast = *head, *temp = *head, *dup = NULL;
+	int res = 1, i = 0, n;
+	listint_t **array_of_list;
+	listint_t *tmp;
 
-	if (*head == NULL || (*head)->next == NULL)
-		return (1);
-
-	while (1)
+	if (head && *head)
 	{
-		fast = fast->next->next;
-		if (!fast)
+		n = list_len(*head);
+		array_of_list = malloc(n * sizeof(listint_t *));
+		tmp = *head;
+		while (tmp)
 		{
-			dup = slow->next;
-			break;
+			array_of_list[i++] = tmp;
+			tmp = tmp->next;
 		}
-		if (!fast->next)
-		{
-			dup = slow->next->next;
-			break;
-		}
-		slow = slow->next;
+		res = _chunk_ispal(array_of_list, 0, n - 1);
+		free(array_of_list);
 	}
-
-	reverse_listint(&dup);
-
-	while (dup && temp)
-	{
-		if (temp->n == dup->n)
-		{
-			dup = dup->next;
-			temp = temp->next;
-		}
-		else
-			return (0);
-	}
-
-	if (!dup)
-		return (1);
-
-	return (0);
+		return (res);
 }
